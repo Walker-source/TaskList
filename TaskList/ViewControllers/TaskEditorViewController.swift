@@ -11,11 +11,13 @@ final class TaskEditorViewController: UIViewController {
     // MARK: - Properties
     unowned var delegate: TaskEditorViewControllerDelegate
     
-    private lazy var task = getTask()
+    // MARK: - Private Properties
+    private lazy var task = setupTaskModel()
     
     // MARK: - UI Elements
     private lazy var taskTextField = makeTextField()
     private lazy var taskNoteField = makeTaskNoteField()
+    private lazy var date = makeDatePicker()
     
     private lazy var saveButton = FilledButton.make(
         title: "Save Button",
@@ -46,12 +48,14 @@ final class TaskEditorViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
         setConstraints()
+        saveButtonActivate()
     }
 }
 
+
 // MARK: - Setup Task Model
 private extension TaskEditorViewController {
-    func getTask() -> Task {
+    func setupTaskModel() -> Task {
         let task = Task(id: UUID(), title: "", note: "", creationDate: Date(), dueDate: nil, isComplete: false)
         return task
     }
@@ -62,9 +66,17 @@ private extension TaskEditorViewController {
     func setConstraints() {
         applyConstraints(to: taskTextField, top: Metrics.VSpacing.large)
         applyConstraints(to: taskNoteField, relativeTo: taskTextField, top: Metrics.VSpacing.medium, height: 100)
-        applyConstraints(to: taskStatusSwitcher, relativeTo: taskNoteField, top: Metrics.VSpacing.medium)
+        applyConstraints(to: date, relativeTo: taskNoteField, top: Metrics.VSpacing.medium)
+        applyConstraints(to: taskStatusSwitcher, relativeTo: date, top: Metrics.VSpacing.medium)
         applyConstraints(to: saveButton, relativeTo: taskStatusSwitcher, top: Metrics.VSpacing.medium)
         applyConstraints(to: cancelButton, relativeTo: saveButton, top: Metrics.VSpacing.medium)
+    }
+    func saveButtonActivate() {
+        if ((taskTextField.text?.isEmpty) != nil) {
+            saveButton.isEnabled = false
+        } else {
+            saveButton.isEnabled = true
+        }
     }
 }
 
@@ -74,7 +86,7 @@ private extension TaskEditorViewController {
         let textField = UITextField()
         textField.borderStyle = .roundedRect
         textField.placeholder = "New Task..."
-        textField.translatesAutoresizingMaskIntoConstraints = false
+
         return textField
     }
     func makeTaskNoteField() -> UITextField {
@@ -86,12 +98,20 @@ private extension TaskEditorViewController {
     }
     func makeTaskStatusSwitch() -> UISegmentedControl {
         let segmentedControl = UISegmentedControl()
-        segmentedControl.insertSegment(withTitle: "In Progress", at: 0, animated: true)
-        segmentedControl.insertSegment(withTitle: "Completed", at: 1, animated: true)
+        
+        segmentedControl.insertSegment(action: setTaskInProgress(), at: 0, animated: true)
+        segmentedControl.insertSegment(action: setTaskCompleted(), at: 1, animated: true)
         segmentedControl.selectedSegmentTintColor = .white
         segmentedControl.setEnabled(true, forSegmentAt: 0)
+        segmentedControl.setTitle("In Progress", forSegmentAt: 0)
+        segmentedControl.setTitle("Completed", forSegmentAt: 1)
         
         return segmentedControl
+    }
+    func makeDatePicker() -> UIDatePicker {
+        let datePicker = UIDatePicker()
+        datePicker.datePickerMode = .date
+        return datePicker
     }
 }
 
@@ -102,9 +122,22 @@ private extension TaskEditorViewController {
             guard let self else { return }
             task.title = taskTextField.text ?? ""
             task.note = taskNoteField.text ?? ""
+            task.creationDate = date.date
             
             delegate.didCreate(task: task )
             dismiss(animated: true)
+        }
+    }
+    func setTaskInProgress() -> UIAction {
+        UIAction { [weak self] _ in
+            guard let self else { return }
+            task.isComplete = false
+        }
+    }
+    func setTaskCompleted() -> UIAction {
+        UIAction { [weak self] _ in
+            guard let self else { return }
+            task.isComplete = true
         }
     }
 }

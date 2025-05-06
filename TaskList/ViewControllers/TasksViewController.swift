@@ -34,7 +34,13 @@ extension TasksViewController {
         let cell = tableView.dequeueReusableCell(withIdentifier: cellID, for: indexPath)
         let task = tasks[indexPath.row]
         var content = cell.defaultContentConfiguration()
-        content.text = task.title
+        
+        if task.isComplete == true {
+            content.attributedText = strikeText(strike: task.title)
+        } else {
+            content.text = task.title
+        }
+            
         cell.contentConfiguration = content
         return cell
     }

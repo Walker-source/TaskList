@@ -84,4 +84,15 @@ extension UIViewController {
 
         NSLayoutConstraint.activate(constraints)
     }
+    
+// Делаем текст зачеркнутым
+    func strikeText(strike: String) -> NSMutableAttributedString {
+        let attributeString = NSMutableAttributedString(string: strike)
+        attributeString.addAttribute(
+            NSAttributedString.Key.strikethroughStyle,
+            value: NSUnderlineStyle.single.rawValue,
+            range: NSMakeRange(0, attributeString.length)
+        )
+        return attributeString
+    }
 }
