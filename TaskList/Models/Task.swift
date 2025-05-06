@@ -8,10 +8,10 @@
 import Foundation
 
 struct Task {
-    let id: UUID
-    let title: String
-    let note: String?
-    let creationDate: Date
-    let dueDate: Date?
-    let isComplete: Bool
+    var id: UUID
+    var title: String
+    var note: String?
+    var creationDate: Date
+    var dueDate: Date?
+    var isComplete: Bool
 }
