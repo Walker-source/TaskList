@@ -8,13 +8,13 @@
 import UIKit
 
 protocol TaskEditorViewControllerDelegate: AnyObject {
-    func didCreate(task: String)
+    func didCreate(task: Task)
 }
 
 final class TasksViewController: UITableViewController {
     
     private let cellID = "taskCell"
-    private var tasks: [String] = []
+    private var tasks: [Task] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,7 +34,7 @@ extension TasksViewController {
         let cell = tableView.dequeueReusableCell(withIdentifier: cellID, for: indexPath)
         let task = tasks[indexPath.row]
         var content = cell.defaultContentConfiguration()
-        content.text = task
+        content.text = task.title
         cell.contentConfiguration = content
         return cell
     }
@@ -69,7 +69,7 @@ private extension TasksViewController {
 
 // MARK: - TaskEditorViewControllerDelegate
 extension TasksViewController: TaskEditorViewControllerDelegate {
-    func didCreate(task: String) {
+    func didCreate(task: Task) {
         let index = IndexPath(row: tasks.count, section: 0)
         tasks.append(task)
         tableView.insertRows(at: [index], with: .automatic)
