@@ -48,7 +48,7 @@ final class TaskEditorViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
         setConstraints()
-        saveButtonActivate()
+//        saveButtonActivate()
     }
 }
 
